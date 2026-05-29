@@ -1,3 +1,4 @@
+<?php include 'auth_check.php'; ?>
 <!doctype html>
 <html lang="en">
 
