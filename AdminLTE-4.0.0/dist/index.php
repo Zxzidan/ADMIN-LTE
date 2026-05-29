@@ -1,3 +1,24 @@
+<?php
+include 'koneksi.php';
+
+// Count active lecturers
+$total_dosen = 0;
+$query_dosen = "SELECT COUNT(*) AS total FROM dosen WHERE status = 'Aktif'";
+$result_dosen = $mysqli->query($query_dosen);
+if ($result_dosen) {
+    $row_dosen = $result_dosen->fetch_assoc();
+    $total_dosen = $row_dosen['total'];
+}
+
+// Count students
+$total_mahasiswa = 0;
+$query_mahasiswa = "SELECT COUNT(*) AS total FROM mahasiswa";
+$result_mahasiswa = $mysqli->query($query_mahasiswa);
+if ($result_mahasiswa) {
+    $row_mahasiswa = $result_mahasiswa->fetch_assoc();
+    $total_mahasiswa = $row_mahasiswa['total'];
+}
+?>
 <!doctype html>
 <html lang="en">
 
@@ -61,11 +82,11 @@
                         <div class="col-lg-3 col-6">
                             <div class="small-box text-bg-primary">
                                 <div class="inner">
-                                    <h3>150</h3>
+                                    <h3><?php echo $total_dosen; ?></h3>
                                     <p>Dosen Aktif</p>
                                 </div>
                                 <i class="small-box-icon bi bi-person-badge-fill"></i>
-                                <a href="./dataDosen.php"
+                                <a href="datadosen.php"
                                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
                                     Lihat Data <i class="bi bi-link-45deg"></i>
                                 </a>
@@ -76,7 +97,7 @@
                         <div class="col-lg-3 col-6">
                             <div class="small-box text-bg-success">
                                 <div class="inner">
-                                    <h3>320</h3>
+                                    <h3><?php echo $total_mahasiswa; ?></h3>
                                     <p>Mahasiswa Aktif</p>
                                 </div>
                                 <i class="small-box-icon bi bi-people-fill"></i>

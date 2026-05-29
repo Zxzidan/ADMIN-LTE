@@ -1,3 +1,39 @@
+<?php
+include 'koneksi.php';
+
+$is_edit = false;
+$id = '';
+$nip = '';
+$nama = '';
+$jk = '';
+$prodi = '';
+$email = '';
+$telepon = '';
+$alamat = '';
+$status = 'Aktif';
+
+if (isset($_GET['id'])) {
+    $is_edit = true;
+    $id = intval($_GET['id']);
+    $stmt = $mysqli->prepare("SELECT * FROM dosen WHERE id_dosen = ?");
+    if ($stmt) {
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $nip = $row['nip_dosen'];
+            $nama = $row['nama_dosen'];
+            $jk = $row['jenis_kelamin'];
+            $prodi = $row['program_studi'];
+            $email = $row['email'];
+            $telepon = $row['no_telepon'];
+            $alamat = $row['alamat'];
+            $status = $row['status'];
+        }
+        $stmt->close();
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
 
@@ -41,13 +77,13 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h3 class="mb-0">Input Data Dosen</h3>
+                            <h3 class="mb-0"><?php echo $is_edit ? 'Edit Data Dosen' : 'Input Data Dosen'; ?></h3>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-end">
                                 <li class="breadcrumb-item"><a href="./index.php">Home</a></li>
                                 <li class="breadcrumb-item"><a href="#">Forms</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Input Data Dosen</li>
+                                <li class="breadcrumb-item active" aria-current="page"><?php echo $is_edit ? 'Edit Data Dosen' : 'Input Data Dosen'; ?></li>
                             </ol>
                         </div>
                     </div>
@@ -65,11 +101,11 @@
                             <div class="card card-primary card-outline">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        <i class="bi bi-person-plus-fill me-2"></i>
-                                        Form Input Data Dosen
+                                        <i class="bi <?php echo $is_edit ? 'bi-pencil-square' : 'bi-person-plus-fill'; ?> me-2"></i>
+                                        Form <?php echo $is_edit ? 'Edit Data Dosen' : 'Input Data Dosen'; ?>
                                     </h3>
                                 </div>
-                                <form action="proses_dosen.php" method="POST">
+                                <form action="aksi.php?act=<?php echo $is_edit ? 'edit_dosen&id='.$id : 'insert_dosen'; ?>" method="POST">
                                     <div class="card-body">
                                         <div class="row">
 
@@ -84,6 +120,7 @@
                                                     id="nip"
                                                     name="nip"
                                                     placeholder="Masukkan NIP"
+                                                    value="<?php echo htmlspecialchars($nip); ?>"
                                                     required />
                                             </div>
 
@@ -98,6 +135,7 @@
                                                     id="nama"
                                                     name="nama"
                                                     placeholder="Masukkan nama lengkap"
+                                                    value="<?php echo htmlspecialchars($nama); ?>"
                                                     required />
                                             </div>
 
@@ -107,9 +145,9 @@
                                                     Jenis Kelamin <span class="text-danger">*</span>
                                                 </label>
                                                 <select class="form-select" id="jenis_kelamin" name="jenis_kelamin" required>
-                                                    <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
-                                                    <option value="L">Laki-laki</option>
-                                                    <option value="P">Perempuan</option>
+                                                    <option value="" disabled <?php echo !$is_edit ? 'selected' : ''; ?>>-- Pilih Jenis Kelamin --</option>
+                                                    <option value="L" <?php echo ($jk == 'Laki-laki' || $jk == 'L') ? 'selected' : ''; ?>>Laki-laki</option>
+                                                    <option value="P" <?php echo ($jk == 'Perempuan' || $jk == 'P') ? 'selected' : ''; ?>>Perempuan</option>
                                                 </select>
                                             </div>
 
@@ -119,10 +157,10 @@
                                                     Program Studi <span class="text-danger">*</span>
                                                 </label>
                                                 <select class="form-select" id="prodi" name="prodi" required>
-                                                    <option value="" disabled selected>-- Pilih Program Studi --</option>
-                                                    <option value="TI">Teknik Informatika</option>
-                                                    <option value="SI">Sistem Informasi</option>
-                                                    <option value="MI">Manajemen Informatika</option>
+                                                    <option value="" disabled <?php echo !$is_edit ? 'selected' : ''; ?>>-- Pilih Program Studi --</option>
+                                                    <option value="TI" <?php echo ($prodi == 'Teknik Informatika' || $prodi == 'TI') ? 'selected' : ''; ?>>Teknik Informatika</option>
+                                                    <option value="SI" <?php echo ($prodi == 'Sistem Informasi' || $prodi == 'SI') ? 'selected' : ''; ?>>Sistem Informasi</option>
+                                                    <option value="MI" <?php echo ($prodi == 'Manajemen Informatika' || $prodi == 'MI') ? 'selected' : ''; ?>>Manajemen Informatika</option>
                                                 </select>
                                             </div>
 
@@ -141,6 +179,7 @@
                                                         id="email"
                                                         name="email"
                                                         placeholder="contoh@email.com"
+                                                        value="<?php echo htmlspecialchars($email); ?>"
                                                         required />
                                                 </div>
                                             </div>
@@ -157,7 +196,8 @@
                                                         class="form-control"
                                                         id="telepon"
                                                         name="telepon"
-                                                        placeholder="08xxxxxxxxxx" />
+                                                        placeholder="08xxxxxxxxxx"
+                                                        value="<?php echo htmlspecialchars($telepon); ?>" />
                                                 </div>
                                             </div>
 
@@ -169,7 +209,7 @@
                                                     id="alamat"
                                                     name="alamat"
                                                     rows="3"
-                                                    placeholder="Masukkan alamat lengkap"></textarea>
+                                                    placeholder="Masukkan alamat lengkap"><?php echo htmlspecialchars($alamat); ?></textarea>
                                             </div>
 
                                             <!-- Status Aktif -->
@@ -183,7 +223,7 @@
                                                         id="status"
                                                         name="status"
                                                         value="1"
-                                                        checked />
+                                                        <?php echo ($status == 'Aktif') ? 'checked' : ''; ?> />
                                                     <label class="form-check-label" for="status">Dosen Aktif</label>
                                                 </div>
                                             </div>
@@ -192,9 +232,9 @@
                                     </div>
                                     <div class="card-footer d-flex gap-2">
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-save me-1"></i> Simpan
+                                            <i class="bi bi-save me-1"></i> <?php echo $is_edit ? 'Update' : 'Simpan'; ?>
                                         </button>
-                                        <a href="./dataDosen.php" class="btn btn-secondary">
+                                        <a href="./datadosen.php" class="btn btn-secondary">
                                             <i class="bi bi-arrow-left me-1"></i> Kembali
                                         </a>
                                         <button type="reset" class="btn btn-outline-danger ms-auto">

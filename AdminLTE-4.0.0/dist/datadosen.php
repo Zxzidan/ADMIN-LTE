@@ -63,6 +63,31 @@
             <div class="app-content">
                 <div class="container-fluid">
 
+                    <!-- Alert Banners -->
+                    <?php if (isset($_GET['msg'])): ?>
+                        <?php if ($_GET['msg'] == 'success_add'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i> Data dosen berhasil ditambahkan!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php elseif ($_GET['msg'] == 'success_edit'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i> Data dosen berhasil diupdate!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php elseif ($_GET['msg'] == 'success_delete'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i> Data dosen berhasil dihapus!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php elseif (strpos($_GET['msg'], 'error') !== false): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> Terjadi kesalahan dalam memproses data dosen!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
                     <!-- Tombol Tambah -->
                     <div class="mb-3">
                         <a href="inputDataDosen.php" class="btn btn-primary">
@@ -93,24 +118,39 @@
                                 </thead>
 
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>0123456789</td>
-                                        <td>Dr. Ahmad Fauzi, S.Kom., M.Kom.</td>
-                                        <td>ahmad@kampus.ac.id</td>
-                                        <td>Teknik Informatika</td>
-                                        <td>
-                                            <button class="btn btn-warning btn-sm">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-
-                                            <button class="btn btn-danger btn-sm">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-
-                                    
+                                    <?php
+                                    include 'koneksi.php';
+                                    $query = "SELECT * FROM dosen";
+                                    $result = $mysqli->query($query);
+                                    if ($result && $result->num_rows > 0) {
+                                        $no = 1;
+                                        while ($row = $result->fetch_assoc()) {
+                                            ?>
+                                            <tr>
+                                                <td><?php echo $no++; ?></td>
+                                                <td><?php echo htmlspecialchars($row['nip_dosen']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['nama_dosen']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['program_studi']); ?></td>
+                                                <td>
+                                                    <a href="inputDataDosen.php?id=<?php echo $row['id_dosen']; ?>" class="btn btn-warning btn-sm">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="aksi.php?act=delete_dosen&id=<?php echo $row['id_dosen']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data dosen ini?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    } else {
+                                        ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted p-3">Belum ada data dosen.</td>
+                                        </tr>
+                                        <?php
+                                    }
+                                    ?>
                                 </tbody>
 
                             </table>

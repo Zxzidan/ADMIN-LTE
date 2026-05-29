@@ -63,16 +63,41 @@
             <div class="app-content">
                 <div class="container-fluid">
 
+                    <!-- Alert Banners -->
+                    <?php if (isset($_GET['msg'])): ?>
+                        <?php if ($_GET['msg'] == 'success_add'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i> Data mahasiswa berhasil ditambahkan!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php elseif ($_GET['msg'] == 'success_edit'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i> Data mahasiswa berhasil diupdate!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php elseif ($_GET['msg'] == 'success_delete'): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i> Data mahasiswa berhasil dihapus!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php elseif (strpos($_GET['msg'], 'error') !== false): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> Terjadi kesalahan dalam memproses data mahasiswa!
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
                     <!-- Tombol Tambah -->
                     <div class="mb-3">
-                        <a href="inputDataMahasiswa.php" class="btn btn-primary">
+                        <a href="inputDataMahasiswa.php" class="btn btn-success">
                             <i class="bi bi-plus-circle"></i>
                             Tambah Mahasiswa
                         </a>
                     </div>
 
                     <!-- Striped Full Width Table -->
-                    <div class="card">
+                    <div class="card card-success card-outline">
 
                         <div class="card-header">
                             <h3 class="card-title">Data Mahasiswa</h3>
@@ -86,31 +111,44 @@
                                         <th width="50">No</th>
                                         <th>NPM</th>
                                         <th>Nama Mahasiswa</th>
-                                        <th>Email</th>
-                                        <th>Program Studi</th>
+                                        <th>Jurusan</th>
                                         <th width="150">Aksi</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>240123456</td>
-                                        <td>Andi Pratama</td>
-                                        <td>andi@mahasiswa.kampus.ac.id</td>
-                                        <td>Teknik Informatika</td>
-                                        <td>
-                                            <button class="btn btn-warning btn-sm">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-
-                                            <button class="btn btn-danger btn-sm">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-
-
+                                    <?php
+                                    include 'koneksi.php';
+                                    $query = "SELECT * FROM mahasiswa";
+                                    $result = $mysqli->query($query);
+                                    if ($result && $result->num_rows > 0) {
+                                        $no = 1;
+                                        while ($row = $result->fetch_assoc()) {
+                                            ?>
+                                            <tr>
+                                                <td><?php echo $no++; ?></td>
+                                                <td><?php echo htmlspecialchars($row['npm_mahasiswa']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['nama_mahasiswa']); ?></td>
+                                                <td><?php echo htmlspecialchars($row['jurusan_mahasiswa']); ?></td>
+                                                <td>
+                                                    <a href="inputDataMahasiswa.php?id=<?php echo $row['id_mahasiswa']; ?>" class="btn btn-warning btn-sm">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="aksi.php?act=delete_mahasiswa&id=<?php echo $row['id_mahasiswa']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    } else {
+                                        ?>
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted p-3">Belum ada data mahasiswa.</td>
+                                        </tr>
+                                        <?php
+                                    }
+                                    ?>
                                 </tbody>
 
                             </table>
