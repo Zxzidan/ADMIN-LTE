@@ -17,14 +17,6 @@
                     Live preview
                 </a>
             </li>
-
-            <!-- Documentation -->
-            <li class="nav-item d-none d-md-block">
-                <a href="./docs/introduction.php" class="nav-link">
-                    <i class="bi bi-book me-1" aria-hidden="true"></i>
-                    Documentation
-                </a>
-            </li>
         </ul>
         <!--end::Start Navbar Links-->
 
